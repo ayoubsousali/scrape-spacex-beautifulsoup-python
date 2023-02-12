@@ -1,5 +1,6 @@
 from bs4 import BeautifulSoup
 import requests
+import csv
 
 url = 'https://www.spacex.com/launches/'
 response = requests.get(url)
@@ -11,13 +12,18 @@ if response.status_code == 200:
 
     launches = launches_container.select('.item')
 
-    for launch in launches:
-        date_element = launch.select_one('.date')
-        date = date_element.text
+    with open('spacex-launches.csv', 'w', encoding='UTF8', newline='') as f:
+        writer = csv.writer(f, delimiter=';')
 
-        label_element = launch.select_one('.label')
-        label = label_element.text
+        writer.writerow(['Launch date', 'Label'])
 
-        print(f'Launch date: {date} Label: {label}')
+        for launch in launches:
+            date_element = launch.select_one('.date')
+            date = date_element.text
+
+            label_element = launch.select_one('.label')
+            label = label_element.text
+
+            writer.writerow([date, label])
 else:
     print('Something went wrong.')
